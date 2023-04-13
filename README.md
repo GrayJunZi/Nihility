@@ -133,3 +133,36 @@ docker build -t stephengrider/redis:latest .
 ```bash
 docker commit -c 'CMD ["redis-server"]' <docker_id>
 ```
+
+
+# 三、构建自定义镜像 (NodeJS Demo)
+
+## 1. 创建 NodeJS WebApp
+
+- 创建 `simpleweb` 文件夹
+- 创建 `package.json` 文件
+- 创建 `index.js` 文件
+
+## 2. 创建Dockerfile
+
+## 3. 基于Dockerfile创建镜像
+
+```bash
+docker build -t grayjunzi/simpleweb .
+```
+
+## 4. 基于镜像运行容器
+
+```bash
+# -p 宿主机端口:容器端口
+docker run -p:8080:8080 grayjunzi/simpleweb
+```
+
+运行容器并进入终端
+```bash
+docker run -it grayjunzi/simpleweb sh
+```
+
+
+## 5. 工作目录
+
