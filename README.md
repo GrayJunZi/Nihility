@@ -135,23 +135,23 @@ docker commit -c 'CMD ["redis-server"]' <docker_id>
 ```
 
 
-# 三、构建自定义镜像 (NodeJS Demo)
+## 三、构建自定义镜像 (NodeJS Demo)
 
-## 1. 创建 NodeJS WebApp
+### 1. 创建 NodeJS WebApp
 
 - 创建 `simpleweb` 文件夹
 - 创建 `package.json` 文件
 - 创建 `index.js` 文件
 
-## 2. 创建Dockerfile
+### 2. 创建Dockerfile
 
-## 3. 基于Dockerfile创建镜像
+### 3. 基于Dockerfile创建镜像
 
 ```bash
 docker build -t grayjunzi/simpleweb .
 ```
 
-## 4. 基于镜像运行容器
+### 4. 基于镜像运行容器
 
 ```bash
 # -p 宿主机端口:容器端口
@@ -164,7 +164,7 @@ docker run -it grayjunzi/simpleweb sh
 ```
 
 
-# 四、了解 Docker Compose 的基本使用
+## 四、了解 Docker Compose 的基本使用
 
 - 用于同时启动多个Docker容器。
 
@@ -187,14 +187,76 @@ docker-compose up --build
 docker-compose down
 ```
 
-查看 Docker Compose 正在运行的容器
+查看 Docker Compose 中的容器
 ```bash
 docker-compose ps
 ```
 
-## 重启策略
+### 重启策略
 
-- "no" - 从不试图重启容器。
+- "no" - 默认值，从不尝试重启容器。
 - "always" - 如果容器停止或其他原因，总是试图重启容器。
-- "on-failure" - 只有在容器停止时出现错误代码时才重新启动。
+- "on-failure" - 只有在容器停止时出现错误代码才重新启动。
 - "unless-stopped" - 除非我们(开发人员)强制停止，否则总是重新启动
+
+## 五、构建自定义镜像 (Nginx + React)
+
+### 开发工作流程
+
+Development -> Testing -> Deployment
+
+1. Github 仓库 拉取代码到主分支
+2. Travis CI 将自动获取代码、测试、并部署应用到AWS主机中。
+
+
+开发阶段:
+    1. 创建/变更 Features(功能)分支 或 更改代码到非主分支的分支中
+    2. 推送到 Github 仓库中
+    3. 创建 Pull Request 合并到主分支
+
+测试阶段：
+    1. 代码推送到 Travis CI 中
+    2. 测试并运行
+
+生产阶段：
+    1. 代码推送到 Travis CI 中
+    2. 测试并运行
+    3. 部署到 AWS Elastic Beanstalk 中
+
+### 创建项目
+
+安装React脚手架工具
+```bash
+npm install -g create-react-app
+```
+
+创建项目
+```bash
+npx create-react-app frontend
+```
+
+仅开发环境运行
+```bash
+npm run start
+```
+
+运行测试
+```bash
+npm run test
+```
+
+构建应用程序的生产版本
+```bash
+npm run build
+```
+
+构建开发版本镜像
+```bash
+docker build -f Dockerfile.dev .
+```
+
+Volumes
+```bash
+docker run -p 3000:3000 -v /app/node_modules -v  $(pwd):/app <container_id>
+docker run -p 3000:3000 -v $(pwd):/app <container_id>
+```
