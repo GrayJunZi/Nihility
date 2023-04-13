@@ -164,5 +164,37 @@ docker run -it grayjunzi/simpleweb sh
 ```
 
 
-## 5. 工作目录
+# 四、了解 Docker Compose 的基本使用
 
+- 用于同时启动多个Docker容器。
+
+启动Docker Compose
+```bash
+docker-compose up 
+```
+
+```bash
+docker-compose up -d
+```
+
+重新构建容器并启动
+```bash
+docker-compose up --build
+```
+
+关闭容器
+```bash
+docker-compose down
+```
+
+查看 Docker Compose 正在运行的容器
+```bash
+docker-compose ps
+```
+
+## 重启策略
+
+- "no" - 从不试图重启容器。
+- "always" - 如果容器停止或其他原因，总是试图重启容器。
+- "on-failure" - 只有在容器停止时出现错误代码时才重新启动。
+- "unless-stopped" - 除非我们(开发人员)强制停止，否则总是重新启动

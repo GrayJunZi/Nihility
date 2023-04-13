@@ -1,0 +1,15 @@
+version: '3'
+services:
+  redis-server:
+    # 镜像
+    image: redis
+    # 重启策略: 总是重启
+    restart: always
+  node-app:
+    # 重启策略: 失败时重启
+    restart: on-failure
+    # 构建 Dockerfile
+    build: .
+    # 映射端口
+    ports:
+      - 8081:8081
