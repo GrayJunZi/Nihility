@@ -34,6 +34,8 @@ Docker Server(Docker Daemon) 负责创建镜像(Image)、运行容器、上传�
 
 ## 二、了解 Docker Client 的基本使用
 
+- simpleweb
+
 ### 1.基本命令
 
 查看 docker 版本
@@ -109,6 +111,8 @@ docker exec -it <container_id> sh
 
 ### 2.创建镜像(Image)
 
+- redis-image
+
 - 创建一个 Dockerfile
 - 指定基础镜像
 - 运行一些命令安装额外程序
@@ -136,6 +140,8 @@ docker commit -c 'CMD ["redis-server"]' <docker_id>
 
 
 ## 三、构建自定义镜像 (NodeJS Demo)
+
+- visits
 
 ### 1. 创建 NodeJS WebApp
 
@@ -201,6 +207,8 @@ docker-compose ps
 
 ## 五、构建自定义镜像 (Nginx + React)
 
+- frontend
+
 ### 开发工作流程
 
 Development -> Testing -> Deployment
@@ -259,4 +267,13 @@ Volumes
 ```bash
 docker run -p 3000:3000 -v /app/node_modules -v  $(pwd):/app <container_id>
 docker run -p 3000:3000 -v $(pwd):/app <container_id>
+```
+
+## 六、复杂容器项目 (Nginx + React + Express + Redis + Postgres)
+
+ - complex  
+
+# 登录 Docker Hub
+```bash
+docker login
 ```
