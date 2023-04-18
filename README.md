@@ -277,3 +277,100 @@ docker run -p 3000:3000 -v $(pwd):/app <container_id>
 ```bash
 docker login
 ```
+
+### 七、了解 Kuberneters 的基本使用
+
+- simplek8s
+
+- 什么是Kubernetes？ - 在多台不同机器上运行多个不同容器的系统
+- 为什么使用 Kubernetes？ - 当你需要用不同的镜像运行许多不同的容器时
+
+- kubectl - 用于管理节点中的容器
+- minicube - 用于管理vm本身
+
+#### 1.Kubernetes 的核心概念
+
+- Pod
+- Service
+- ReplicaController
+- StatefulSet
+
+让多客户端镜像作为容器在本地Kubernetes群集上运行。
+
+Pod是运行单个容器的最小的东西。
+
+#### 2. 对象类型 (Object Types)
+
+- Pods - 运行一个或多个密切相关的容器。
+- Services - 在Kubernetes集群中设置网络。
+    - ClusterIP
+    - NodePort - 对外公开一个容器出来(仅开发环境使用)
+    - LoadBalancer
+    - Ingress
+- Development - 开发环境
+
+```bash
+# apply: 修改当前集群配置
+# -f : 指定文件
+# <filename> : 配置文件的路径
+kubectl apply -f <filename>
+```
+
+```bash
+kubectl apply -f client-pod.yaml
+kubectl apply -f client-node-port.yaml
+```
+
+查看pods
+```bash
+kubectl get pods
+```
+
+查看services
+```bash
+kubectl get services
+```
+
+开启minikube
+```bash
+minikube start
+```
+
+查看ip
+```bash
+minikube ip
+```
+
+查看具体信息
+```bash
+kubectl describe <object_type> <object_name>
+```
+
+```bash
+kubectl describe pod client-pod
+```
+
+删除
+```bash
+kubectl delete -f <config_file>
+```
+
+```bash
+kubectl delete -f client-pod.yaml
+```
+
+```bash
+kubectl get pods -o wide
+```
+
+```bash
+kubectl set image <object_type> / <object_name> <container_name> = <new image to use>
+```
+
+```bash
+kubectl set image deplyment/client-deployment client=stephengrider/multi-client:v5
+```
+
+```bash
+minikube docker-env
+```
