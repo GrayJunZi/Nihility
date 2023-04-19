@@ -374,3 +374,75 @@ kubectl set image deplyment/client-deployment client=stephengrider/multi-client:
 ```bash
 minikube docker-env
 ```
+
+### 八、了解 Kubernetes 配置
+
+#### 将配置合并到单个文件中
+
+在一个`.yaml` 文件中 使用 `---` 将多个配置隔开。如下所示:
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      component: web
+  template:
+    metadata:
+      labels:
+        component: web
+    spec:
+      containers:
+        - name: client
+          image: stephengrider/multi-client
+          ports:
+            - containerPort: 3000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: server-cluster-ip-service
+spec:
+  type: ClusterIP
+  selector:
+    component: server
+  ports:
+    - port: 5000
+      targetPort: 5000
+```
+
+#### PVC
+
+`PVC` 是 `Persistent Volume Claim` 的缩写。
+
+
+```bash
+kubectl get pv
+```
+
+#### Secrets
+
+创建 Secret
+```bash
+kubectl create secret generic <secret_name> --from-literal key=value
+```
+
+```bash
+kubectl create secret generic pgpassword --from-literal PGPASSWORD=postgres  
+```
+
+查看 Secret
+```bash
+kubectl get secrets
+```
+
+#### 负载均衡 (Load Balancer)
+
+#### dashboard
+
+```bash
+minikube dashboard
+```
