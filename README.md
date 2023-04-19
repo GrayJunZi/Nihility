@@ -446,3 +446,9 @@ kubectl get secrets
 ```bash
 minikube dashboard
 ```
+
+
+
+# 未完成
+
+因网络环境所受限，故无法完成学习。
