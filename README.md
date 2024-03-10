@@ -145,33 +145,36 @@ rtcPeerConnection - Stream video, peer to peer
 
 ### SDP
 
-SDP是`Session Description Protocol`的缩写，它是一个描述连接的多媒体内容的标准，例如分辨率格式、编码器、加密等。
+SDP 是`Session Description Protocol`的缩写，它是一个描述连接的多媒体内容的标准，例如分辨率格式、编码器、加密等。
 
 ### ICE
 
-ICE是`Interactive Connectivity Establishment`的缩写，它是一个框架允许浏览器进行对等连接。有很多原因导致对等点a到对等点b的直接连接是行不通的，
+ICE 是`Interactive Connectivity Establishment`的缩写，它是一个框架允许浏览器进行对等连接。有很多原因导致对等点 a 到对等点 b 的直接连接是行不通的，
 
 ### NAT
 
-NAT是`Network Address Translation`的缩写，用来给你的设备提供公共IP地址。
+NAT 是`Network Address Translation`的缩写，用来给你的设备提供公共 IP 地址。
 
 ### STUN
 
-STUN是`Session Traversal Utilities for NAT`的缩写，它是一种发现您的公共IP地址的协议，判断出路由器阻止直连的限制方法的协议。客户端通过给公网的`STUN`服务器发送请求获得自己的公网地址信息，以及是否能够被访问。
+STUN 是`Session Traversal Utilities for NAT`的缩写，它是一种发现您的公共 IP 地址的协议，判断出路由器阻止直连的限制方法的协议。客户端通过给公网的`STUN`服务器发送请求获得自己的公网地址信息，以及是否能够被访问。
 
 ### 创建信令服务(Signaling)
 
 安装 socket.io
+
 ```bash
 npm install socket.io
 ```
 
-安装mkcert
+安装 mkcert
+
 ```bash
 npm install -g mkcert
 ```
 
-使用mkcert创建免费证书
+使用 mkcert 创建免费证书
+
 ```bash
 mkcert create-ca
 mkcert create-cert
@@ -180,5 +183,31 @@ mkcert create-cert
 ## 四、使用 WebRTC 和 React 开发 TeleLegal 项目
 
 webrtc and react - a TeleLegal site
+
+### 创建前端项目
+
+```bash
+npx create-react-app telelegal-front-end
+cd telelegal-front-end
+mkdir certs
+cd certs
+mkcert create-ca
+mkcert create-cert
+```
+
+安装 socket.io 客户端
+```bash
+npm install socket.io-client
+```
+
+### 创建后端项目
+
+```bash
+mkdir telelegal-back-end
+cd telelegal-back-end
+npm init -y
+npm install express
+npm install socket.io
+```
 
 ## 五、部署
