@@ -200,6 +200,7 @@ mkcert create-cert
 npm install socket.io-client
 ```
 
+
 ### 创建后端项目
 
 ```bash
@@ -208,6 +209,11 @@ cd telelegal-back-end
 npm init -y
 npm install express
 npm install socket.io
+```
+
+安装 Json Web Token
+```bash
+npm install jsonwebtoken
 ```
 
 ## 五、部署

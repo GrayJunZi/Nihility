@@ -11,6 +11,7 @@ const key = fs.readFileSync("./certs/cert.key");
 const cert = fs.readFileSync("./certs/cert.crt");
 
 const expressServer = https.createServer({ key, cert }, app);
+
 const io = socketio(expressServer, {
   cors: [
     "https://localhost:3000",
@@ -19,6 +20,9 @@ const io = socketio(expressServer, {
   ],
 });
 
-expressServer.listen(9000);
+expressServer.listen(9000, function (err) {
+  if (err) console.error("TeleLegal Backend Starting Error:", err);
+  else console.log("TeleLegal Backend Started on https://localhost:9000");
+});
 
 module.exports = { io, expressServer, app };
