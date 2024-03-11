@@ -16,8 +16,9 @@ app.get("/user-link", (req, res) => {
   res.send(`${frontEnd}/join-video?token=${token}`);
 });
 
-app.get("/validate-link", (req, res) => {
-  const token = req.query.token;
+app.post("/validate-link", (req, res) => {
+  const token = req.body.token;
   const decodedData = jwt.verify(token, linkSecret);
+  
   res.json(decodedData);
 });

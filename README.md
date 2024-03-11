@@ -200,6 +200,16 @@ mkcert create-cert
 npm install socket.io-client
 ```
 
+安装 react-router-dom 路由组件
+```bash
+npm install react-router-dom
+```
+
+安装 axios 网络请求组件
+```bash
+npm install axios
+```
+
 
 ### 创建后端项目
 
@@ -214,6 +224,11 @@ npm install socket.io
 安装 Json Web Token
 ```bash
 npm install jsonwebtoken
+```
+
+安装 cors 跨域组件
+```bash
+npm install cors
 ```
 
 ## 五、部署
