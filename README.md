@@ -210,6 +210,16 @@ npm install react-router-dom
 npm install axios
 ```
 
+安装 moment
+```bash
+npm install moment
+```
+
+安装 redux
+```bash
+npm install redux
+npm install react-redux
+```
 
 ### 创建后端项目
 
