@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import axios from "axios";
 
@@ -9,12 +9,16 @@ import ChatWindow from "./ChatWindow";
 import ActionButtons from "./ActionButtons";
 import addStream from "../../redux/actions/addStream";
 import { useDispatch } from "react-redux";
+import createPeerConnection from "../../utilities/creeatePeerConnection";
+import updateCallStatus from "../../redux/actions/updateCallStatus";
 
 const MainVideoPage = () => {
   // 从URL的 Query String 中获取Token内容
   const [searchParams, setSearchParams] = useSearchParams();
   const [apptInfo, setApptInfo] = useState({});
   const dispatch = useDispatch();
+  const smallFeedElement = useRef(null);
+  const largeFeedElement = useRef(null);
 
   useEffect(() => {
     // 获取用户媒体
@@ -25,7 +29,13 @@ const MainVideoPage = () => {
       };
       try {
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
+        dispatch(updateCallStatus("haveMedia", true));
+
         dispatch(addStream("localStream", stream));
+
+        // 建立对等连接
+        const { peerConnection, remoteStream } = await createPeerConnection();
+        dispatch(addStream("remote1", remoteStream, peerConnection));
       } catch (err) {
         console.log(err);
       }
@@ -50,8 +60,20 @@ const MainVideoPage = () => {
   return (
     <div className="main-video-page">
       <div className="video-chat-wrapper">
-        <video id="large-feed" autoPlay controls playsInline></video>
-        <video id="own-feed" autoPlay controls playsInline></video>
+        <video
+          id="large-feed"
+          ref={largeFeedElement}
+          autoPlay
+          controls
+          playsInline
+        ></video>
+        <video
+          id="own-feed"
+          ref={smallFeedElement}
+          autoPlay
+          controls
+          playsInline
+        ></video>
         {apptInfo.professionalsFullName ? (
           <CallInfo apptInfo={apptInfo} />
         ) : (
@@ -59,7 +81,7 @@ const MainVideoPage = () => {
         )}
         <ChatWindow />
       </div>
-      <ActionButtons />
+      <ActionButtons smallFeedElement={smallFeedElement}/>
     </div>
   );
 };

@@ -3,8 +3,10 @@ import { useState, useEffect, useRef } from "react";
 import HangupButton from "./HangUpButton";
 import socket from "../../utilities/socketConnection";
 import { useSelector } from "react-redux";
+import VideoButton from "./VideoButton/VideoButton";
+import AudioButton from "./AudioButton";
 
-const ActionButtons = ({ openCloseChat, smallFeedlEl }) => {
+const ActionButtons = ({ openCloseChat, smallFeedElement }) => {
   const callStatus = useSelector((state) => state.callStatus);
   // const callStatus = useSelector(state=>state.callStatus);
   const menuButtons = useRef(null);
@@ -40,35 +42,12 @@ const ActionButtons = ({ openCloseChat, smallFeedlEl }) => {
     });
   }, []);
 
-  let micText;
-  if (callStatus.current === "idle") {
-    micText = "Join Audio";
-  } else if (callStatus.audio) {
-    micText = "Mute";
-  } else {
-    micText = "Unmute";
-  }
-
   return (
     <div id="menu-buttons" ref={menuButtons} className="row">
       {/* <i className="fa fa-microphone" style="font-size:48px;color:red"></i> */}
       <div className="left col-2">
-        <div className="button-wrapper d-inline-block">
-          <i className="fa fa-caret-up choose-audio"></i>
-          <div className="button mic">
-            <i className="fa fa-microphone"></i>
-            <div className="btn-text">{micText}</div>
-          </div>
-        </div>
-        <div className="button-wrapper video-button d-inline-block">
-          <i className="fa fa-caret-up choose-video"></i>
-          <div className="button camera">
-            <i className="fa fa-video"></i>
-            <div className="btn-text">
-              {callStatus.video === "display" ? "Stop" : "Start"} Video
-            </div>
-          </div>
-        </div>
+        <AudioButton />
+        <VideoButton smallFeedElement={smallFeedElement}/>
       </div>
 
       <div className="col-8 text-center">
