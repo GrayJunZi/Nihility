@@ -6,7 +6,7 @@ const startLocalVideoStream = (streams, dispatch) => {
     if (s !== "localStream") {
       const currentStream = streams[s];
       localStream.stream.getVideoTracks().forEach((x) => {
-        currentStream.peerConnection.addTrack(x, currentStream.stream);
+        currentStream.peerConnection.addTrack(x, streams.localStream.stream);
       });
       dispatch(updateCallStatus("video", "enabled"));
     }
