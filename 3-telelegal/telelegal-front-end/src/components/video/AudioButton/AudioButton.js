@@ -1,25 +1,27 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import ActionButtonCaretDropdown from "./ActionButtonCaretDropdown";
-import getDevices from "../../utilities/getDevices";
-import updateCallStatus from "../../redux/actions/updateCallStatus";
-import addStream from "../../redux/actions/addStream";
+import ActionButtonCaretDropdown from "../ActionButtonCaretDropdown";
+import getDevices from "../../../utilities/getDevices";
+import updateCallStatus from "../../../redux/actions/updateCallStatus";
+import addStream from "../../../redux/actions/addStream";
+import startAudioStream from "./StartAudioStream";
 
 const AudioButton = ({ smallFeedElement }) => {
+  const dispatch = useDispatch();
   const callStatus = useSelector((state) => state.callStatus);
+  const streams = useSelector((state) => state.streams);
+  const [caretOpen, setCaretOpen] = useState(false);
+  const [audioDeviceList, setAudioDeviceList] = useState([]);
 
   let micText;
-  if (callStatus.current === "idle") {
+  if (callStatus.audio === "off") {
     micText = "Join Audio";
-  } else if (callStatus.audio) {
+  } else if (callStatus.audio === "enabled") {
     micText = "Mute";
   } else {
     micText = "Unmute";
   }
 
-  const dispatch = useDispatch();
-  const [caretOpen, setCaretOpen] = useState(false);
-  const [audioDeviceList, setAudioDeviceList] = useState([]);
   const changeAudioDevice = async (e) => {
     // 获取设备ID
     const deviceId = e.target.value.slice(5);
@@ -55,13 +57,36 @@ const AudioButton = ({ smallFeedElement }) => {
     };
     getDevicesAsync();
   }, [caretOpen]);
+
+  const startStopAudio = () => {
+    if (callStatus.audio === "enabled") {
+      dispatch(updateCallStatus("audio", "disabled"));
+      streams.localStream.stream
+        .getAudioTracks()
+        .forEach((x) => (x.enabled = false));
+    } else if (callStatus.audio === "disabled") {
+      dispatch(updateCallStatus("audio", "enalbed"));
+      streams.localStream.stream
+        .getAudioTracks()
+        .forEach((x) => (x.enabled = true));
+    } else {
+      changeAudioDevice({
+        target: {
+          value: "inputdefault",
+        },
+      });
+
+      startAudioStream(streams);
+    }
+  };
+
   return (
     <div className="button-wrapper d-inline-block">
       <i
         className="fa fa-caret-up choose-audio"
         onClick={() => setCaretOpen(!caretOpen)}
       ></i>
-      <div className="button mic">
+      <div className="button mic" onClick={startStopAudio}>
         <i className="fa fa-microphone"></i>
         <div className="btn-text">{micText}</div>
       </div>{" "}

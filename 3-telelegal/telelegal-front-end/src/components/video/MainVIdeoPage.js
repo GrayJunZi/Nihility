@@ -25,7 +25,7 @@ const MainVideoPage = () => {
     const fetchMedia = async () => {
       const constraints = {
         video: true,
-        audio: false,
+        audio: true,
       };
       try {
         const stream = await navigator.mediaDevices.getUserMedia(constraints);
@@ -41,7 +41,7 @@ const MainVideoPage = () => {
       }
     };
     fetchMedia();
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     const token = searchParams.get("token");
@@ -55,7 +55,7 @@ const MainVideoPage = () => {
     };
 
     fetchDecodedToken();
-  }, []);
+  }, [searchParams]);
 
   return (
     <div className="main-video-page">

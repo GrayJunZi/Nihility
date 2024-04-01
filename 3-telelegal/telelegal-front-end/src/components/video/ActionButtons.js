@@ -4,7 +4,7 @@ import HangupButton from "./HangUpButton";
 import socket from "../../utilities/socketConnection";
 import { useSelector } from "react-redux";
 import VideoButton from "./VideoButton/VideoButton";
-import AudioButton from "./AudioButton";
+import AudioButton from "./AudioButton/AudioButton";
 
 const ActionButtons = ({ openCloseChat, smallFeedElement }) => {
   const callStatus = useSelector((state) => state.callStatus);
