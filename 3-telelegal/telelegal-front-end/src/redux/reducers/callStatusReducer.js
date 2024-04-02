@@ -6,6 +6,7 @@ const initState = {
   videoDevice: "default",
   shareScreen: false,
   haveMedia: false,
+  haveCreatedOffer: false,
 };
 
 const callStatusReducer = (state = initState, action) => {

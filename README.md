@@ -241,4 +241,9 @@ npm install jsonwebtoken
 npm install cors
 ```
 
+安装 uuid
+```bash
+npm install uuid
+```
+
 ## 五、部署

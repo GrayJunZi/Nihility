@@ -8,15 +8,17 @@ import CallInfo from "./CallInfo";
 import ChatWindow from "./ChatWindow";
 import ActionButtons from "./ActionButtons";
 import addStream from "../../redux/actions/addStream";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import createPeerConnection from "../../utilities/creeatePeerConnection";
 import updateCallStatus from "../../redux/actions/updateCallStatus";
+import socket from "../../utilities/socketConnection";
 
 const MainVideoPage = () => {
-  // 从URL的 Query String 中获取Token内容
+  const dispatch = useDispatch();
+  const callStatus = useSelector((state) => state.callStatus);
+  const streams = useSelector((state) => state.streams);
   const [searchParams, setSearchParams] = useSearchParams();
   const [apptInfo, setApptInfo] = useState({});
-  const dispatch = useDispatch();
   const smallFeedElement = useRef(null);
   const largeFeedElement = useRef(null);
 
@@ -44,6 +46,31 @@ const MainVideoPage = () => {
   }, [dispatch]);
 
   useEffect(() => {
+    const createOfferAsync = async () => {
+      for (const s in streams) {
+        if (s !== "localStream") {
+          try {
+            const pc = streams[s].peerConnection;
+            const offer = await pc.createOffer();
+            socket.emit("newOffer", { offer, apptInfo });
+          } catch (err) {
+            console.log(err);
+          }
+        }
+      }
+      dispatch(updateCallStatus("haveCreatedOffer", true));
+    };
+    if (
+      callStatus.audio === "enabled" &&
+      callStatus.video === "enabled" &&
+      !callStatus.haveCreatedOffer
+    ) {
+      createOfferAsync();
+    }
+  }, [callStatus.audio, callStatus.video, callStatus.haveCreatedOffer]);
+
+  useEffect(() => {
+    // 从URL的 Query String 中获取Token内容
     const token = searchParams.get("token");
     const fetchDecodedToken = async () => {
       const resp = await axios.post("https://localhost:9000/validate-link", {
@@ -81,7 +108,7 @@ const MainVideoPage = () => {
         )}
         <ChatWindow />
       </div>
-      <ActionButtons smallFeedElement={smallFeedElement}/>
+      <ActionButtons smallFeedElement={smallFeedElement} />
     </div>
   );
 };
