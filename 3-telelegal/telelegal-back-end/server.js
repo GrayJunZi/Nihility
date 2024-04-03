@@ -6,9 +6,9 @@ const express = require("express");
 const cors = require("cors");
 const socketio = require("socket.io");
 const app = express();
-app.use(cors());  //允许所有域名跨域
+app.use(cors()); //允许所有域名跨域
 app.use(express.static(__dirname + "/public"));
-app.use(express.json());  // 允许解析json到body对象中
+app.use(express.json()); // 允许解析json到body对象中
 
 const key = fs.readFileSync("./certs/cert.key");
 const cert = fs.readFileSync("./certs/cert.crt");
@@ -28,4 +28,6 @@ expressServer.listen(9000, function (err) {
   else console.log("TeleLegal Backend Started on https://localhost:9000");
 });
 
-module.exports = { io, expressServer, app };
+const linkSecret = "vnialkasdfjlkafgoituaslkdj";
+
+module.exports = { io, expressServer, app, linkSecret };

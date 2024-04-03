@@ -1,8 +1,8 @@
-import { BrowserRouter, Routes, Route, Link } from "react-router-dom";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import "./App.css";
 
-import socketConnection from "./utilities/socketConnection";
 import MainVideoPage from "./components/video/MainVIdeoPage";
+import ProDashboard from "./components/site/ProDashboard";
 
 const Home = () => <h1>Hello, Home page</h1>;
 
@@ -12,6 +12,7 @@ function App() {
       <Routes>
         <Route extra path="/" Component={Home}></Route>
         <Route path="/join-video" Component={MainVideoPage}></Route>
+        <Route path="/dashboard" Component={ProDashboard}></Route>
       </Routes>
     </BrowserRouter>
   );

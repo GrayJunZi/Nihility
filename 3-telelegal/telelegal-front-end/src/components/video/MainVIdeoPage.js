@@ -11,7 +11,7 @@ import addStream from "../../redux/actions/addStream";
 import { useDispatch, useSelector } from "react-redux";
 import createPeerConnection from "../../utilities/creeatePeerConnection";
 import updateCallStatus from "../../redux/actions/updateCallStatus";
-import socket from "../../utilities/socketConnection";
+import socketConnection from "../../utilities/socketConnection";
 
 const MainVideoPage = () => {
   const dispatch = useDispatch();
@@ -52,6 +52,8 @@ const MainVideoPage = () => {
           try {
             const pc = streams[s].peerConnection;
             const offer = await pc.createOffer();
+            const token = searchParams.get("token");
+            const socket = socketConnection(token);
             socket.emit("newOffer", { offer, apptInfo });
           } catch (err) {
             console.log(err);
@@ -67,7 +69,14 @@ const MainVideoPage = () => {
     ) {
       createOfferAsync();
     }
-  }, [callStatus.audio, callStatus.video, callStatus.haveCreatedOffer]);
+  }, [
+    callStatus.audio,
+    callStatus.video,
+    callStatus.haveCreatedOffer,
+    apptInfo,
+    dispatch,
+    streams,
+  ]);
 
   useEffect(() => {
     // 从URL的 Query String 中获取Token内容

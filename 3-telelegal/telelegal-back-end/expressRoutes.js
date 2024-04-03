@@ -1,8 +1,7 @@
 // 创建 路由
 
-const app = require("./server").app;
+const { app, linkSecret } = require("./server");
 const jwt = require("jsonwebtoken");
-const linkSecret = "vnialkasdfjlkafgoituaslkdj";
 const frontEnd = "https://localhost:3000";
 const { v4: uuidv4 } = require("uuid");
 
@@ -32,4 +31,15 @@ app.post("/validate-link", (req, res) => {
   const decodedData = jwt.verify(token, linkSecret);
 
   res.json(decodedData);
+});
+
+app.get("/pro-link", (req, res) => {
+  const userData = {
+    fullName: "Peter, J.D.",
+    proId: 123,
+  };
+  const token = jwt.sign(userData, linkSecret);
+  res.send(
+    `<a href="${frontEnd}/dashboard?token=${token}" target="_blank">Link Here</a>`
+  );
 });
