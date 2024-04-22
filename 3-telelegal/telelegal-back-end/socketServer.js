@@ -42,6 +42,14 @@ io.on("connection", (socket) => {
         fullName,
       });
     }
+
+    const professionalAppointments = app.get("professionalAppointments");
+    socket.emit(
+      "apptData",
+      professionalAppointments.filter(
+        (x) => x.professionalsFullName === fullName
+      )
+    );
   }
   socket.on("newOffer", ({ offer, apptInfo }) => {
     allKnownOffers[apptInfo.uuid] = {

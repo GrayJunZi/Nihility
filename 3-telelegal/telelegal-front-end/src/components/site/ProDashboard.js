@@ -3,25 +3,18 @@ import "./ProDashboard.css";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
 import socketConnection from "../../utilities/socketConnection";
+import proSocketListeners from "../../utilities/proSocketListeners";
+import moment from "moment";
 
 const ProDashboard = () => {
   const [searchParams, setSearchParams] = useSearchParams();
-  const [apptInfo, setApptInfo] = useState({});
+  const [apptInfo, setApptInfo] = useState([]);
 
   useEffect(() => {
     // 从URL的 Query String 中获取Token内容
     const token = searchParams.get("token");
-    socketConnection(token);
-    const fetchDecodedToken = async () => {
-      const resp = await axios.post("https://localhost:9000/validate-link", {
-        token,
-      });
-      const data = resp.data;
-      console.log(data);
-      setApptInfo(data);
-    };
-
-    fetchDecodedToken();
+    const socket = socketConnection(token);
+    proSocketListeners(socket, setApptInfo);
   }, [searchParams]);
 
   return (
@@ -71,13 +64,25 @@ const ProDashboard = () => {
               <div className="col-6">
                 <div className="dash-box clients-board blue-bg">
                   <h4>Coming Appointments</h4>
-                  <li className="client">
-                    Akash Patel - 8-10-23 11am{" "}
-                    <div className="waiting-text d-inline-block">Waiting</div>
-                    <button className="btn btn-danger join-btn">Join</button>
-                  </li>
-                  <li className="client">Jim Jones - 8-10-23, 2pm</li>
-                  <li className="client">Mike Williams - 8-10-23 3pm</li>
+                  {apptInfo.map((x) => (
+                    <div key={x.uuid}>
+                      <li className="client">
+                        {x.clientName} - {moment(x.apptDate).calendar()}
+                        {x.waiting ? (
+                          <>
+                            <div className="waiting-text d-inline-block">
+                              Waiting
+                            </div>
+                            <button className="btn btn-danger join-btn">
+                              Join
+                            </button>
+                          </>
+                        ) : (
+                          <></>
+                        )}
+                      </li>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
