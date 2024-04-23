@@ -50,6 +50,12 @@ io.on("connection", (socket) => {
         (x) => x.professionalsFullName === fullName
       )
     );
+
+    for (const offer of allKnownOffers) {
+      if (offer.professionalsFullName === fullName) {
+        io.to(socket.id).emit("newOfferWaiting", offer);
+      }
+    }
   }
   socket.on("newOffer", ({ offer, apptInfo }) => {
     allKnownOffers[apptInfo.uuid] = {
@@ -60,6 +66,12 @@ io.on("connection", (socket) => {
       answerIceCandidates: [],
     };
 
+    const professionalAppointments = app.get("professionalAppointments");
+    const pa = professionalAppointments.find((x) => x.uuid === apptInfo.uuid);
+    if (pa) {
+      pa.waiting = true;
+    }
+
     const p = connectedProfessionals.find(
       (x) => x.fullName === apptInfo.professionalsFullName
     );
@@ -68,6 +80,13 @@ io.on("connection", (socket) => {
       socket
         .to(socketId)
         .emit("newOfferWaiting", allKnownOffers[apptInfo.uuid]);
+
+      socket.to(socketId).emit(
+        "apptData",
+        professionalAppointments.filter(
+          (x) => x.professionalsFullName === apptInfo.professionalsFullName
+        )
+      );
     }
   });
 });

@@ -1,20 +1,21 @@
 import { useEffect, useState } from "react";
-import "./ProDashboard.css";
-import axios from "axios";
+import { useDispatch } from "react-redux";
 import { useSearchParams } from "react-router-dom";
 import socketConnection from "../../utilities/socketConnection";
 import proSocketListeners from "../../utilities/proSocketListeners";
 import moment from "moment";
+import "./ProDashboard.css";
 
 const ProDashboard = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [apptInfo, setApptInfo] = useState([]);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     // 从URL的 Query String 中获取Token内容
     const token = searchParams.get("token");
     const socket = socketConnection(token);
-    proSocketListeners(socket, setApptInfo);
+    proSocketListeners(socket, setApptInfo, dispatch);
   }, [searchParams]);
 
   return (
