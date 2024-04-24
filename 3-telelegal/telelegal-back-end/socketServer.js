@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 
 const connectedProfessionals = [];
 
-const allKnownOffers = [
+const allKnownOffers = {
   // uniqueId
   // offer
   // professionalsFullName
@@ -16,7 +16,7 @@ const allKnownOffers = [
   // offererIceCandidates
   // answer
   // answerIceCandidates
-];
+};
 
 // 客户端已连接
 io.on("connection", (socket) => {
@@ -51,7 +51,8 @@ io.on("connection", (socket) => {
       )
     );
 
-    for (const offer of allKnownOffers) {
+    for (const key in allKnownOffers) {
+      const offer = allKnownOffers[key];
       if (offer.professionalsFullName === fullName) {
         io.to(socket.id).emit("newOfferWaiting", offer);
       }

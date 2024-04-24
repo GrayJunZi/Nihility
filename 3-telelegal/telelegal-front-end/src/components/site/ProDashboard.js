@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import socketConnection from "../../utilities/socketConnection";
 import proSocketListeners from "../../utilities/proSocketListeners";
 import moment from "moment";
@@ -9,6 +9,7 @@ import "./ProDashboard.css";
 const ProDashboard = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [apptInfo, setApptInfo] = useState([]);
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -16,7 +17,15 @@ const ProDashboard = () => {
     const token = searchParams.get("token");
     const socket = socketConnection(token);
     proSocketListeners(socket, setApptInfo, dispatch);
-  }, [searchParams]);
+  }, [searchParams, dispatch]);
+
+  const joinCall = (appt) => {
+    console.log(appt);
+    const token = searchParams.get("token");
+    navigate(
+      `/join-video-pro?token=${token}&uuid=${appt.uuid}&client=${appt.clientName}`
+    );
+  };
 
   return (
     <div className="container">
@@ -74,7 +83,10 @@ const ProDashboard = () => {
                             <div className="waiting-text d-inline-block">
                               Waiting
                             </div>
-                            <button className="btn btn-danger join-btn">
+                            <button
+                              className="btn btn-danger join-btn"
+                              onClick={() => joinCall(x)}
+                            >
                               Join
                             </button>
                           </>
