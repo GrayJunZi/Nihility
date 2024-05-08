@@ -6,6 +6,7 @@ const jwt = require("jsonwebtoken");
 // const professionalAppointments = app.get("professionalAppointments");
 
 const connectedProfessionals = [];
+const connectedClients = [];
 
 const allKnownOffers = {
   // uniqueId
@@ -57,7 +58,40 @@ io.on("connection", (socket) => {
         io.to(socket.id).emit("newOfferWaiting", offer);
       }
     }
+  } else {
+    const { professionalsFullName, uuid, clientName } = decodedData;
+    const clientExist = connectedClients.find((x) => x.uuid == uuid);
+    if (clientExist) {
+      clientExist.socketId = socket.id;
+    } else {
+      connectedClients.push({
+        clientName,
+        uuid,
+        professionalMeetingWith: professionalsFullName,
+      });
+    }
+
+    const offerForThisClient = allKnownOffers[uuid];
+    if (offerForThisClient) {
+      io.to(socket.id).emit("answerToClient", offerForThisClient.answer);
+    }
   }
+
+  socket.on("newAnswer", ({ answer, uuid }) => {
+    console.log("-------------------------------NEW ANSWER");
+    console.log(answer);
+    console.log(uuid);
+
+    const socketToSendTo = connectedClients.find((x) => x.uuid == uuid);
+    if (socketToSendTo) {
+      socket.to(socketToSendTo.socketId).emit("answerToClient", answer);
+    }
+    const knownOffer = allKnownOffers[uuid];
+    if (knownOffer) {
+      knownOffer.answer = answer;
+    }
+  });
+
   socket.on("newOffer", ({ offer, apptInfo }) => {
     allKnownOffers[apptInfo.uuid] = {
       ...apptInfo,
@@ -88,6 +122,40 @@ io.on("connection", (socket) => {
           (x) => x.professionalsFullName === apptInfo.professionalsFullName
         )
       );
+    }
+  });
+
+  socket.on("getIce", (uuid, who, ackFunc) => {
+    const offer = allKnownOffers[uuid];
+    let iceCandidates = [];
+    if (who === "professional") {
+      iceCandidates = offer.offerIceCandidates;
+    } else if (who === "client") {
+      iceCandidates = offer.answerIceCandidates;
+    }
+    ackFunc(iceCandidates);
+  });
+
+  socket.on("iceToServer", ({ iceCandidate, who, uuid }) => {
+    console.log(who, uuid, iceCandidate);
+    const offerToUpdate = allKnownOffers[uuid];
+    if (offerToUpdate) {
+      if (who === "client") {
+        console.log(offerToUpdate);
+        offerToUpdate.offerIceCandidates.push(iceCandidate);
+        const socketToSendTo = connectedProfessionals.find(
+          (x) => x.fullName === decodedData.professionalsFullName
+        );
+        if (socketToSendTo) {
+          socket.to(socketToSendTo.socketId).emit("iceToClient", iceCandidate);
+        }
+      } else if (who === "professional") {
+        offerToUpdate.answerIceCandidates.push(iceCandidate);
+        const socketToSendTo = connectedClients.find((x) => x.uuid === uuid);
+        if (socketToSendTo) {
+          socket.to(socketToSendTo.socketId).emit("iceToClient", iceCandidate);
+        }
+      }
     }
   });
 });

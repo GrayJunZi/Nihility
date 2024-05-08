@@ -16,7 +16,11 @@ const ProDashboard = () => {
     // 从URL的 Query String 中获取Token内容
     const token = searchParams.get("token");
     const socket = socketConnection(token);
-    proSocketListeners(socket, setApptInfo, dispatch);
+    proSocketListeners.proDashboardSocketListeners(
+      socket,
+      setApptInfo,
+      dispatch
+    );
   }, [searchParams, dispatch]);
 
   const joinCall = (appt) => {

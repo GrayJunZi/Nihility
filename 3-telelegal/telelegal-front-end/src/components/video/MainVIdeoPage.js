@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from "react-redux";
 import createPeerConnection from "../../utilities/creeatePeerConnection";
 import updateCallStatus from "../../redux/actions/updateCallStatus";
 import socketConnection from "../../utilities/socketConnection";
+import clientSocketListeners from "../../utilities/clientSocketListeners";
 
 const MainVideoPage = () => {
   const dispatch = useDispatch();
@@ -21,6 +22,8 @@ const MainVideoPage = () => {
   const [apptInfo, setApptInfo] = useState({});
   const smallFeedElement = useRef(null);
   const largeFeedElement = useRef(null);
+  const uuidRef = useRef(null);
+  const streamsRef = useRef(null);
 
   useEffect(() => {
     // 获取用户媒体
@@ -36,7 +39,9 @@ const MainVideoPage = () => {
         dispatch(addStream("localStream", stream));
 
         // 建立对等连接
-        const { peerConnection, remoteStream } = await createPeerConnection();
+        const { peerConnection, remoteStream } = await createPeerConnection(
+          addIce
+        );
         dispatch(addStream("remote1", remoteStream, peerConnection));
       } catch (err) {
         console.log(err);
@@ -46,15 +51,24 @@ const MainVideoPage = () => {
   }, [dispatch]);
 
   useEffect(() => {
+    if (streams.remote1) {
+      streamsRef.current = streams;
+    }
+  }, [streams]);
+
+  useEffect(() => {
     const createOfferAsync = async () => {
       for (const s in streams) {
         if (s !== "localStream") {
           try {
             const pc = streams[s].peerConnection;
             const offer = await pc.createOffer();
+            pc.setLocalDescription(offer);
             const token = searchParams.get("token");
             const socket = socketConnection(token);
             socket.emit("newOffer", { offer, apptInfo });
+
+            clientSocketListeners(socket, dispatch);
           } catch (err) {
             console.log(err);
           }
@@ -76,7 +90,22 @@ const MainVideoPage = () => {
     apptInfo,
     dispatch,
     streams,
+    searchParams,
   ]);
+
+  useEffect(() => {
+    const addAnswerAsync = async () => {
+      for (const s in streams) {
+        if (s !== "localStream") {
+          const pc = streams[s].peerConnection;
+          await pc.setRemoteDescription(callStatus.answer);
+        }
+      }
+    };
+    if (callStatus.answer) {
+      addAnswerAsync();
+    }
+  }, [streams, callStatus]);
 
   useEffect(() => {
     // 从URL的 Query String 中获取Token内容
@@ -88,10 +117,36 @@ const MainVideoPage = () => {
       const data = resp.data;
       console.log(data);
       setApptInfo(data);
+      uuidRef.current = resp.data.uuid;
     };
 
     fetchDecodedToken();
   }, [searchParams]);
+
+  useEffect(() => {
+    const token = searchParams.get("token");
+    const socket = socketConnection(token);
+    clientSocketListeners(socket, addIceCandidateToPc);
+  }, [searchParams]);
+
+  const addIceCandidateToPc = (iceCandidate) => {
+    for (const s in streamsRef.current) {
+      if (s !== "localStream") {
+        const pc = streams[s].peerConnection;
+        pc.addIceCandidate(iceCandidate);
+        console.log("Added an iceCandidate to existing page presence");
+      }
+    }
+  };
+
+  const addIce = (iceCandidate) => {
+    const socket = socketConnection(searchParams.get("token"));
+    socket.emit("iceToServer", {
+      iceCandidate,
+      who: "client",
+      uuid: uuidRef.current,
+    });
+  };
 
   return (
     <div className="main-video-page">
