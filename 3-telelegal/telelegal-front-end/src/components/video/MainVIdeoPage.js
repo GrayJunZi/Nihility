@@ -24,6 +24,7 @@ const MainVideoPage = () => {
   const largeFeedElement = useRef(null);
   const uuidRef = useRef(null);
   const streamsRef = useRef(null);
+  const [showCallInfo, setShowCallInfo] = useState(true);
 
   useEffect(() => {
     // 获取用户媒体
@@ -43,6 +44,8 @@ const MainVideoPage = () => {
           addIce
         );
         dispatch(addStream("remote1", remoteStream, peerConnection));
+
+        largeFeedElement.current.srcObject = remoteStream;
       } catch (err) {
         console.log(err);
       }
@@ -67,8 +70,6 @@ const MainVideoPage = () => {
             const token = searchParams.get("token");
             const socket = socketConnection(token);
             socket.emit("newOffer", { offer, apptInfo });
-
-            clientSocketListeners(socket, dispatch);
           } catch (err) {
             console.log(err);
           }
@@ -126,7 +127,7 @@ const MainVideoPage = () => {
   useEffect(() => {
     const token = searchParams.get("token");
     const socket = socketConnection(token);
-    clientSocketListeners(socket, addIceCandidateToPc);
+    clientSocketListeners(socket, dispatch, addIceCandidateToPc);
   }, [searchParams]);
 
   const addIceCandidateToPc = (iceCandidate) => {
@@ -135,6 +136,8 @@ const MainVideoPage = () => {
         const pc = streams[s].peerConnection;
         pc.addIceCandidate(iceCandidate);
         console.log("Added an iceCandidate to existing page presence");
+
+        setShowCallInfo(false);
       }
     }
   };
@@ -165,14 +168,13 @@ const MainVideoPage = () => {
           controls
           playsInline
         ></video>
-        {apptInfo.professionalsFullName ? (
-          <CallInfo apptInfo={apptInfo} />
-        ) : (
-          <></>
-        )}
+        {showCallInfo ? <CallInfo apptInfo={apptInfo} /> : <></>}
         <ChatWindow />
       </div>
-      <ActionButtons smallFeedElement={smallFeedElement} />
+      <ActionButtons
+        smallFeedElement={smallFeedElement}
+        largeFeedElement={largeFeedElement}
+      />
     </div>
   );
 };

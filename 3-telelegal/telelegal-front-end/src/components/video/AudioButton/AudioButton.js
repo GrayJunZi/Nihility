@@ -44,7 +44,17 @@ const AudioButton = ({ smallFeedElement }) => {
       // 更新 streams 中的 localStream
       dispatch(addStream("localStream", stream));
       // 添加轨道
-      const tracks = stream.getAudioTracks();
+      const [audioTrack] = stream.getVideoTracks();
+
+      for (const s in streams) {
+        if (s !== "localStream") {
+          const senders = streams[s].peerConnection.getSenders();
+          const sender = senders.find(
+            (x) => x.track && x.track.kind === audioTrack.kind
+          );
+          sender.replaceTrack(audioTrack);
+        }
+      }
     }
   };
 

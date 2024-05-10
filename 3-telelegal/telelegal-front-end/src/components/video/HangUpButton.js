@@ -1,12 +1,23 @@
 import { useDispatch, useSelector } from "react-redux";
 import updateCallStatus from "../../redux/actions/updateCallStatus";
 
-const HangupButton = () => {
+const HangupButton = ({ smallFeedElement, largeFeedElement }) => {
   const dispatch = useDispatch();
   const callStatus = useSelector((state) => state.callStatus);
+  const streams = useSelector((state) => state.streams);
 
   const hangupCall = () => {
     dispatch(updateCallStatus("current", "complete"));
+    for (const s in streams) {
+      if (streams[s].peerConnection) {
+        streams[s].peerConnection.close();
+        streams[s].peerConnection.onicecandidate = null;
+        streams[s].peerConnection.onaddstream = null;
+        streams[s].peerConnection = null;
+      }
+    }
+    smallFeedElement.current.srcObject = null;
+    largeFeedElement.current.srcObject = null;
   };
 
   if (callStatus.current === "complete") {

@@ -43,6 +43,8 @@ const ProMainVideoPage = () => {
           addIce
         );
         dispatch(addStream("remote1", remoteStream, peerConnection));
+
+        largeFeedElement.current.srcObject = remoteStream;
       } catch (err) {
         console.log(err);
       }
@@ -197,7 +199,10 @@ const ProMainVideoPage = () => {
         )}
         <ChatWindow />
       </div>
-      <ActionButtons smallFeedElement={smallFeedElement} />
+      <ActionButtons
+        smallFeedElement={smallFeedElement}
+        largeFeedElement={largeFeedElement}
+      />
     </div>
   );
 };
